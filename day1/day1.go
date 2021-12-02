@@ -84,8 +84,6 @@ func partTwo() {
 	}
 
 	checkError(scanner.Err())
-	fmt.Println("ALL VALUES: ", values)
-	fmt.Println("ALL SUMS: ", sums)
 	fmt.Println("No of increases: ", increases)
 }
 
