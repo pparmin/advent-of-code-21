@@ -25,15 +25,27 @@ func checkError(e error) {
 	}
 }
 
-func partOne() {
-	file, err := os.Open("input.txt")
+func ReadFile(name string) []string {
+	file, err := os.Open(name)
 	checkError(err)
 	scanner := bufio.NewScanner(file)
 
-	pos := newPosition()
+	var text []string
 
 	for scanner.Scan() {
-		input := strings.Split(scanner.Text(), " ")
+		line := scanner.Text()
+		text = append(text, line)
+	}
+	checkError(scanner.Err())
+	return text
+}
+
+func partOne() {
+	input := ReadFile("input.txt")
+	pos := newPosition()
+
+	for _, line := range input {
+		input := strings.Split(line, " ")
 		command := input[0]
 		value, err := strconv.Atoi(input[1])
 		checkError(err)
@@ -47,7 +59,6 @@ func partOne() {
 			pos.depth -= value
 		}
 	}
-	checkError(scanner.Err())
 	fmt.Println("Horizontal position: ", pos.horizontal)
 	fmt.Println("Depth: ", pos.depth)
 	fmt.Println("Both positions multiplied: ", pos.horizontal*pos.depth)

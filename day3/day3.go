@@ -94,11 +94,24 @@ func checkError(e error) {
 	}
 }
 
-func partOne() {
-	file, err := os.Open("input.txt")
+func ReadFile(name string) []string {
+	file, err := os.Open(name)
 	checkError(err)
 	scanner := bufio.NewScanner(file)
 
+	var text []string
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		text = append(text, line)
+	}
+	checkError(scanner.Err())
+	return text
+}
+
+func partOne() {
+	input := ReadFile("input.txt")
+	var err error
 	var (
 		gammaBuilder       = strings.Builder{}
 		epsilonBuilder     = strings.Builder{}
@@ -108,12 +121,10 @@ func partOne() {
 		binaries       []string
 	)
 
-	for scanner.Scan() {
-		binary := scanner.Text()
+	for _, line := range input {
+		binary := line
 		binaries = append(binaries, binary)
 	}
-
-	checkError(scanner.Err())
 
 	i := 0
 	for i < 12 {
@@ -149,18 +160,16 @@ func partOne() {
 }
 
 func partTwo() {
-	file, err := os.Open("input.txt")
-	checkError(err)
-	scanner := bufio.NewScanner(file)
-
+	input := ReadFile("input.txt")
+	var err error
 	var (
 		oxygen []string
 		co2    []string
 		r      = newReport()
 	)
 
-	for scanner.Scan() {
-		binary := scanner.Text()
+	for _, line := range input {
+		binary := line
 		oxygen = append(oxygen, binary)
 		co2 = append(co2, binary)
 	}

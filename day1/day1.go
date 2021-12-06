@@ -13,6 +13,21 @@ func checkError(e error) {
 	}
 }
 
+func ReadFile(name string) []string {
+	file, err := os.Open(name)
+	checkError(err)
+	scanner := bufio.NewScanner(file)
+
+	var text []string
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		text = append(text, line)
+	}
+	checkError(scanner.Err())
+	return text
+}
+
 func makeSum(values []int) int {
 	sum := 0
 	for _, v := range values {
@@ -22,33 +37,25 @@ func makeSum(values []int) int {
 }
 
 func partOne() {
-	file, err := os.Open("input.txt")
-	checkError(err)
-	scanner := bufio.NewScanner(file)
-
+	input := ReadFile("input.txt")
 	var (
 		increases  int = 0
 		prevNumber int = 0
 	)
 
-	for scanner.Scan() {
-		curNumber, err := strconv.Atoi(scanner.Text())
+	for _, line := range input {
+		curNumber, err := strconv.Atoi(line)
 		checkError(err)
 		if prevNumber < curNumber && prevNumber != 0 {
 			increases++
 		}
 		prevNumber = curNumber
 	}
-
-	checkError(scanner.Err())
 	fmt.Println("Number of increases: ", increases)
 }
 
 func partTwo() {
-	file, err := os.Open("input.txt")
-	checkError(err)
-	scanner := bufio.NewScanner(file)
-
+	input := ReadFile("input.txt")
 	var (
 		values    []int
 		sums      []int
@@ -59,8 +66,8 @@ func partTwo() {
 		increases int = 0
 	)
 
-	for scanner.Scan() {
-		number, err := strconv.Atoi(scanner.Text())
+	for _, line := range input {
+		number, err := strconv.Atoi(line)
 		checkError(err)
 		values = append(values, number)
 	}
@@ -82,8 +89,6 @@ func partTwo() {
 		end++
 		start++
 	}
-
-	checkError(scanner.Err())
 	fmt.Println("No of increases: ", increases)
 }
 
