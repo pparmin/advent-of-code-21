@@ -26,7 +26,7 @@ type Board struct {
 	// we know the column is full
 	vertical map[int]int
 
-	// only needed for part two
+	// only used in part two
 	ready bool
 }
 
@@ -94,7 +94,7 @@ func getBoards(input []string) []Board {
 	return boards
 }
 
-func play(n string, boards []Board) (string, Board, bool) {
+func play(n string, boards []Board) (Board, bool) {
 	for _, b := range boards {
 		for k, r := range b.rows {
 			for l, num := range r.values {
@@ -108,10 +108,35 @@ func play(n string, boards []Board) (string, Board, bool) {
 			}
 		}
 		if isComplete(b) {
-			return n, b, true
+			b.ready = true
+			return b, true
 		}
 	}
-	return "", Board{}, false
+	return Board{}, false
+}
+
+func playTwo(n string, b Board) Board {
+	// stop execution for boards which are already ready
+	if b.ready {
+		return Board{}
+	}
+
+	for k, r := range b.rows {
+		for l, num := range r.values {
+			if num.value == n {
+				num.marked = true
+				r.horizontal++
+				b.vertical[l] += 1
+				b.rows[k].values[l] = num
+				b.rows[k].horizontal = r.horizontal
+			}
+		}
+	}
+	if isComplete(b) {
+		b.ready = true
+		return b
+	}
+	return Board{}
 }
 
 func isComplete(b Board) bool {
@@ -133,7 +158,7 @@ func calcScore(b Board) int {
 	sum := 0
 	for _, row := range b.rows {
 		for _, v := range row.values {
-			if v.marked == false {
+			if !v.marked {
 				val, err := strconv.Atoi(v.value)
 				checkError(err)
 				sum += val
@@ -167,26 +192,53 @@ func partOne() {
 	input := ReadFile("input.txt")
 	complete := false
 	var final Board
-	lastNum := ""
 
 	numbers := strings.Split(input[0], ",")
 	boards := getBoards(input)
 
-	// TODO: Find a way to access each individual number in multi-
-	// dimensional array
 	for _, n := range numbers {
-		lastNum, final, complete = play(n, boards)
+		final, complete = play(n, boards)
 		if complete {
 			fmt.Println("FINAL BOARD:", final)
 			result := calcScore(final)
-			lNum, err := strconv.Atoi(lastNum)
+			lastNum, err := strconv.Atoi(n)
 			checkError(err)
-			fmt.Println("FINAL RESULT: ", result*lNum)
+			fmt.Println("FINAL RESULT: ", result*lastNum)
 			return
+		}
+	}
+}
+
+func partTwo() {
+	input := ReadFile("input.txt")
+	var completed []Board
+	var r Board
+	result := 0
+	numbers := strings.Split(input[0], ",")
+	boards := getBoards(input)
+
+	for _, n := range numbers {
+		for i, b := range boards {
+			r = playTwo(n, b)
+			if r.ready {
+				completed = append(completed, r)
+				if len(completed) == len(boards) {
+					fmt.Println("Last board to be ready reached!")
+					fmt.Println("Board no ", i, ": ", r)
+					result = calcScore(r)
+					lastNum, err := strconv.Atoi(n)
+					checkError(err)
+					fmt.Println("FINAL RESULT: ", result*lastNum)
+					return
+				}
+				// replace old board with new board in overall boards slice
+				boards[i] = r
+			}
 		}
 	}
 }
 
 func main() {
 	partOne()
+	partTwo()
 }
