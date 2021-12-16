@@ -25,6 +25,9 @@ type Board struct {
 	// holds a counter for each position in each row; if one pos reaches 5
 	// we know the column is full
 	vertical map[int]int
+
+	// only needed for part two
+	ready bool
 }
 
 func newRow() *Row {
@@ -91,7 +94,7 @@ func getBoards(input []string) []Board {
 	return boards
 }
 
-func markNumber(n string, boards []Board) (string, Board, bool) {
+func play(n string, boards []Board) (string, Board, bool) {
 	for _, b := range boards {
 		for k, r := range b.rows {
 			for l, num := range r.values {
@@ -172,7 +175,7 @@ func partOne() {
 	// TODO: Find a way to access each individual number in multi-
 	// dimensional array
 	for _, n := range numbers {
-		lastNum, final, complete = markNumber(n, boards)
+		lastNum, final, complete = play(n, boards)
 		if complete {
 			fmt.Println("FINAL BOARD:", final)
 			result := calcScore(final)
