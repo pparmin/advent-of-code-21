@@ -177,10 +177,10 @@ func checkError(e error) {
 func ReadFile(name string) []string {
 	file, err := os.Open(name)
 	checkError(err)
+	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
-
 	var text []string
-
 	for scanner.Scan() {
 		line := scanner.Text()
 		text = append(text, line)

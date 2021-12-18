@@ -16,8 +16,9 @@ func checkError(e error) {
 func ReadFile(name string) []string {
 	file, err := os.Open(name)
 	checkError(err)
-	scanner := bufio.NewScanner(file)
+	defer file.Close()
 
+	scanner := bufio.NewScanner(file)
 	var text []string
 
 	for scanner.Scan() {
